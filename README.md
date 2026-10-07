@@ -57,7 +57,7 @@ Linux 源码模式还需系统 PortAudio 库，例如 Ubuntu/Debian 使用 `sudo
 - `LT_DEVICE`：`auto`、`cpu`、`cuda` 或 `metal`。
 - `LT_PORT`、`LT_MT_PORT`：本机服务端口。
 
-Windows 默认数据目录为用户 LocalAppData 下的 `LectureTranscribe`；macOS 为 Application Support；Linux 为 XDG 用户数据目录。数据与源码、应用程序分离。
+源码版 Windows 默认数据目录为用户 LocalAppData 下的 `LectureTranscribe`；macOS 为 Application Support；Linux 为 XDG 用户数据目录。Windows 桌面版默认使用 `%APPDATA%\lecture-transcribe-desktop\data`，运行组件存放在同级 `runtime` 目录。模型目录可在「模型管理」中另选位置。数据与源码、应用程序分离。
 
 模型管理 API：`GET /api/models`，`POST /api/models/{id}/download`、`cancel`、`reference`，`DELETE /api/models/{id}`，`DELETE /api/models/{id}/partial`，`POST /api/models/storage`。本机接口拒绝其他网站触发的写操作。
 

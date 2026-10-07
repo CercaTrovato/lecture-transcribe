@@ -10,7 +10,7 @@ parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument("--output", type=Path, required=True)
 args = parser.parse_args()
 files = []
-for name in ("app.py", "transcribe.py", "lt.py", "record.py", "srt2txt.py", "README.md", "LICENSE", "pyproject.toml", ".python-version", ".gitignore"):
+for name in ("app.py", "transcribe.py", "lt.py", "record.py", "srt2txt.py", "README.md", "README.en.md", "LICENSE", "pyproject.toml", ".python-version", ".gitignore"):
     path = root / name
     if path.exists():
         files.append(path)

@@ -1,76 +1,100 @@
-# Lecture Transcribe
+# Lecture Transcribe · 课堂转录
 
-本地录音、转录和可选双语翻译。所有模型由用户主动下载、引用或卸载，默认不会下载模型。
+**简体中文** | [English](README.en.md)
 
-项目仓库：https://github.com/CercaTrovato/lecture-transcribe
+把课堂、会议或其他讲话录下来，边听边看文字，也可以显示中文翻译。已有录音或视频可以导入，生成带时间戳的文字、字幕和双语稿。
 
-## 使用方式
+识别和翻译在你的电脑上完成，录音不会上传到云端。下载应用和模型需要联网；准备好以后，可以在本地使用，无需云端 API Key。
 
-### Windows x64 安装
+**[下载 Windows 安装包](https://github.com/CercaTrovato/lecture-transcribe/releases/latest)** · [让 agent 帮你安装](#让-agent-帮你安装) · [模型怎么选](#模型怎么选) · [English installation guide](README.en.md#install-on-windows)
 
-从 [v0.2.0 发行页面](https://github.com/CercaTrovato/lecture-transcribe/releases/tag/v0.2.0) 下载 `LectureTranscribe-Setup-0.2.0.exe`，运行后选择安装位置。安装入口约 0.69 MB，会下载约 114 MB 的桌面应用；首启由你点击安装约 153 MB 的基础运行组件。无需预先安装 Python。
+## 能做什么
 
-NVIDIA 加速组件约 1.95 GB，按需选装。各模型另行选择下载，不包含在安装器或运行组件中。安装过程需要访问 GitHub，模型下载需要访问 Hugging Face。当前安装器未签名，Windows 可能显示未知发布者提示。
+- 录音时显示识别出来的文字；安装翻译模型后，可同时看中文译文。
+- 导入已有的音频或视频，重新识别整段内容。
+- 查看和播放历史录音，点击文字跳到对应时间，搜索当前稿件的内容。
+- 下载 Markdown、TXT、SRT 字幕或双语稿。
+- 自己决定安装哪些模型、把模型放在哪个磁盘，以及什么时候卸载。
 
-可通过 Windows「已安装的应用」卸载桌面程序；录音、转录、译文和模型存放在独立用户目录，卸载程序不会删除这些资料。
+没有安装模型时也能保存录音、导入音频和播放历史，但不会把声音识别成文字。
 
-打开应用后，可以直接录音保存、导入音频、播放和查看历史；使用语音识别或翻译功能前，在「模型管理」中安装所需模型。
+## 在 Windows 上安装
 
-| 模型 | 权重大小约 | 作用 | 缺失影响 |
+目前提供 **Windows x64** 安装包。无需预先安装 Python、Node.js 或 CUDA 开发工具。
+
+1. 打开 **[下载页面](https://github.com/CercaTrovato/lecture-transcribe/releases/latest)**，在 **Assets（附件）** 中下载 `LectureTranscribe-Setup-版本号.exe`。当前版本是 [0.2.0，点击直接下载](https://github.com/CercaTrovato/lecture-transcribe/releases/download/v0.2.0/LectureTranscribe-Setup-0.2.0.exe)。普通用户只需下载这个 `.exe`。
+2. 运行安装器，选择安装位置。它会联网下载桌面应用。
+3. 打开 **LectureTranscribe**，点击 **基础运行环境 → 下载并安装**。安装完成后点击 **进入应用**。
+4. 点击 **模型管理**，选择需要的模型。如果想先试用语音识别，安装 **Whisper Turbo**；如果还要边录边看中文，再安装 **Hy-MT2 1.8B Q4**。
+5. 选择麦克风和讲话语言，勾选实时转录或实时翻译，点击 **开始录音**；结束后等待完整转录。也可以点击 **导入音频**，处理已有文件。
+
+安装器和运行组件从 GitHub 下载，模型从 Hugging Face 下载。当前安装器未签名，Windows 可能提示未知发布者。电脑速度、录音质量和讲话方式都会影响识别速度与结果。
+
+### 要下载多少东西
+
+下面是 **0.2.0 的下载量**，不是安装后的磁盘占用；解压安装时还需要额外空间。
+
+| 内容 | 下载量约 | 是否需要 |
+| --- | ---: | --- |
+| 安装入口 `.exe` | 0.69 MB | 需要，它会继续下载桌面应用 |
+| 桌面应用 | 114 MB | 自动由安装器下载 |
+| 基础运行环境 | 153 MB | 首次打开时点击安装 |
+| NVIDIA 加速组件 | 1.95 GB | 有 NVIDIA 显卡、想用 GPU 加速时选装 |
+| 语音识别和翻译模型 | 见下表 | 按用途自行选择 |
+
+**只安装程序和基础环境，下载量约 267 MB，不会自动下载几个 GB 的模型。** CPU 可以运行转录和翻译；速度取决于电脑配置。没有 NVIDIA 显卡也可以使用基础环境。
+
+## 模型怎么选
+
+不需要把四个模型全部下载。只要转录文字，先装 Turbo；需要实时中文翻译，再加 1.8B。其他两个是增强选项。
+
+| 模型 | 下载量约 | 用来做什么 | 没装或卸载之后 |
 | --- | ---: | --- | --- |
-| Whisper Turbo | 1.62 GB | 标准实时及完整转录共用 | 需要其他已安装的转录模型；没有转录模型时不识别语音 |
-| Whisper large-v3 | 3.09 GB | 高精度转录选装包 | Turbo 标准转录仍可使用 |
-| Hy-MT2 1.8B Q4 | 1.13 GB | 实时译文 | 只显示实时原文，不影响录音和转录 |
-| Hy-MT2 7B Q4 | 4.62 GB | 最终整篇精译选装包 | 实时双语稿保留，不生成最终精译稿 |
+| **Whisper Turbo** | 1.62 GB | 日常实时转录和结束后的完整转录 | 需要改用 large-v3；两者都没有时，只能保存音频，不能识别文字 |
+| Whisper large-v3 | 3.09 GB | 另一种转录模型，供想尝试更高准确率的人选择 | 仍可使用 Turbo |
+| **Hy-MT2 1.8B Q4** | 1.13 GB | 录音时把识别出来的内容翻译成中文 | 实时显示原文，录音和转录照常工作 |
+| Hy-MT2 7B Q4 | 4.62 GB | 完整转录以后，再生成整篇中文译文 | 不生成新的最终精译稿，已有原文和实时双语稿保留 |
 
-标准双语推荐 Turbo + 1.8B，模型约 2.75 GB。推荐不等于自动安装。用户可以选择模型存储目录；更换目录不搬移或删除原文件。
+**实时双语组合：Turbo + 1.8B，模型合计约 2.75 GB。** 如果磁盘紧张，可以先只安装 Turbo。
 
-下载支持校验、取消、同版本续传和重试。取消后的下载文件可主动清理。模型正在被任务使用时拒绝卸载；外部模型只移除引用，不删除文件。卸载模型不删除录音、转录或已有译文。
+模型管理里能看到每个模型的作用、下载进度和卸载按钮。可以取消、继续下载，也可以引用电脑里已经有的模型。卸载模型不会删除录音、原文或译文；引用已有模型时，「移除引用」只取消连接，不删除原文件。模型正在被任务使用时，需要等任务结束才能卸载。
 
-「实时双语稿」保留当时的源句和译文；「完整转录稿」是对整段音频重新识别的原文。两者可能不同，不将旧译文冒充为最终稿的精译。安装 7B 后可生成最终双语稿。
+可以在模型管理中选择存储目录。更换目录不会自动搬走旧模型；旧文件还在原位置。
 
-## 当前验证范围
+## 让 agent 帮你安装
 
-Windows 的共享前端、模型管理、CUDA Turbo 和 CPU 1.8B 实时翻译已经验证。Apple Metal 适配器与 Linux/macOS 包装代码已接入，但仍需对应平台及硬件验收，不能视为已验证的正式跨平台发行版。
+把下面这段话复制给能操作你电脑的 agent，例如带终端或桌面操作能力的编程助手。聊天窗口本身没有电脑操作权限时，无法代你安装。
 
-Windows x64 安装器与运行组件通过 GitHub Release 公开下载，组件清单固定到对应版本并校验大小及 SHA-256。macOS/Linux 当前提供源码，尚未发布其安装器。
+> 请按 https://github.com/CercaTrovato/lecture-transcribe/blob/main/docs/AGENT-INSTALL.md 安装 Lecture Transcribe。先确认我的系统是 Windows x64，从官方最新 Release 下载并校验安装器，安装桌面应用和基础 CPU 运行环境，然后检查能否打开主界面。默认不下载模型，不安装 NVIDIA 组件；如果已经装好，请复用现有安装，不覆盖我的数据。最后告诉我程序在哪里、如何打开，以及还缺哪些模型。
 
-## 源码运行
+如果你希望 agent 一次装好实时双语功能，再加上：
 
-需要 Python 3.12 和 uv：
+> 我同意额外下载 Whisper Turbo 和 Hy-MT2 1.8B Q4，模型约 2.75 GB。请把模型放到我指定的磁盘目录，下载完成后确认两个模型都显示已安装。不下载 large-v3、7B 或 NVIDIA 组件。
 
-```powershell
-uv sync --extra test
-# 普通安装不包含 NVIDIA 依赖；需要 CUDA 时主动选择附加组件：
-uv sync --extra cuda --extra test
-uv run app.py
-```
+详细操作：[中文 agent 安装指南](docs/AGENT-INSTALL.md) · [English agent installation guide](docs/AGENT-INSTALL.en.md)。指南包含校验下载、静默安装和通过应用接口安装组件的步骤；不只是让 agent 下载一个安装器就结束。
 
-macOS 源码模式需 Metal 绑定：`uv sync --extra metal --extra test`。翻译运行程序由安装器组件提供；源码模式可设置 `LT_LLAMA_SERVER` 指向已有的 `llama-server`。
+## 文件放在哪里，怎么卸载
 
-Linux 源码模式还需系统 PortAudio 库，例如 Ubuntu/Debian 使用 `sudo apt-get install libportaudio2`；发行安装包应声明该系统依赖。
+Windows 桌面版默认把录音、文字和模型放在 `%APPDATA%\lecture-transcribe-desktop\data`，运行环境放在同级的 `runtime` 目录。模型目录可另选磁盘。应用界面的 **复制路径** 可以查看当前录音所在位置。
 
-可选环境变量：
+在 Windows **设置 → 应用 → 已安装的应用** 中卸载 LectureTranscribe 即可。程序卸载后，这些独立保存的资料会保留。要释放模型空间，可在应用的模型管理里先卸载不需要的模型。
 
-- `LT_DATA_DIR`：用户录音与配置目录。
-- `LT_MODEL_DIR`：模型目录；也可在界面内选择并保存。
-- `LT_DEVICE`：`auto`、`cpu`、`cuda` 或 `metal`。
-- `LT_PORT`、`LT_MT_PORT`：本机服务端口。
+## 两种稿子有什么区别
 
-源码版 Windows 默认数据目录为用户 LocalAppData 下的 `LectureTranscribe`；macOS 为 Application Support；Linux 为 XDG 用户数据目录。Windows 桌面版默认使用 `%APPDATA%\lecture-transcribe-desktop\data`，运行组件存放在同级 `runtime` 目录。模型目录可在「模型管理」中另选位置。数据与源码、应用程序分离。
+**实时双语稿** 是录音当时逐步识别和翻译的内容。**完整转录稿** 是结束后重新处理整段音频得到的原文，可能会修正实时识别中的错误。安装 7B 并启用最终整篇精译后，还可以生成与完整原文对齐的译文。
 
-模型管理 API：`GET /api/models`，`POST /api/models/{id}/download`、`cancel`、`reference`，`DELETE /api/models/{id}`，`DELETE /api/models/{id}/partial`，`POST /api/models/storage`。本机接口拒绝其他网站触发的写操作。
+在界面里选择稿件类型即可查看。实时译文不会被直接套到修改后的完整原文上。
 
-## 验证与构建
+## 其他系统与开发者
 
-```powershell
-uv run python -m unittest discover -s tests -v
-cd desktop
-npm ci
-npx install-electron
-npm test
-```
+| 系统 | 当前状态 |
+| --- | --- |
+| Windows x64 | 已发布安装包，已做本机隔离安装、卸载和 CPU/NVIDIA 短样本验证 |
+| macOS / Linux | 提供源码，尚未发布原生安装包；Apple Metal 仍需硬件验证 |
+| 手机和平板 | 当前没有原生安装包 |
 
-组件构建工具为 `tools/build_runtime.py`，需要目标平台的便携 Python、依赖目录和 llama.cpp 二进制。它不包含模型。用 `tools/configure_release.py --base-url <真实下载地址> --output <构建配置>` 设置发行地址，再使用 Electron Builder 构建；始终使用 `--publish never` 做本地验证。
+源码、构建及接口说明见 **[开发者指南](docs/DEVELOPMENT.md)**。已做和未做的测试见 [验收状态](docs/STATUS.md)，发行文件的构建方式见 [打包说明](docs/PACKAGING.md)。
 
-完整验收状态见 [docs/STATUS.md](docs/STATUS.md)。
+项目关键词：本地转录、语音转文字、课堂录音、会议记录、实时双语、离线翻译、Whisper、Hy-MT、speech-to-text、transcription、local AI。
+
+采用 [MIT License](LICENSE)。

@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lecture Transcribe</title>
+<link rel="icon" href="favicon.ico">
+<link rel="stylesheet" href="style.css?v=9">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">🎙️ Lecture Transcribe</div>
+  <div class="top-right">
+    <div id="model-pill" class="pill">模型加载中…</div>
+    <button id="btn-models" class="btn small">模型管理</button>
+    <button id="btn-runtime" class="btn small" hidden>运行组件</button>
+    <button id="btn-quit" class="btn small" title="关闭后台转录服务（释放显存）；下次用桌面图标重新打开">退出服务</button>
+  </div>
+</header>
+
+<div class="layout">
+  <aside class="sidebar">
+    <div class="side-head">
+      <span>历史记录</span>
+      <label class="btn small" title="导入 mp3 / m4a / wav / mp4 等"><span id="import-label">导入音频</span><input id="import-file" type="file" accept="audio/*,video/*" hidden></label>
+    </div>
+    <div id="import-status" class="hint" role="status" aria-live="polite" hidden style="padding: 0 16px 12px; overflow-wrap: anywhere"></div>
+    <ul id="rec-list" class="rec-list"></ul>
+  </aside>
+
+  <main class="main">
+    <section class="card recorder" id="recorder">
+      <div class="row">
+        <select id="rec-course" title="选课程：自动填术语提示和默认名称（来自 courses.json）"><option value="">（不选课程）</option></select>
+        <input id="rec-name" placeholder="录音名称，如 IS6400_M04" maxlength="60">
+        <input id="rec-hotwords" placeholder="术语提示（逗号分隔），如 CityU, SKU, RFM">
+        <select id="rec-lang" title="音频语言（录音与导入均使用此设置）" aria-label="音频语言"><option value="auto">语言：自动检测</option><option value="zh">语言：中文</option><option value="en">语言：英语</option></select>
+        <select id="rec-device" title="麦克风"></select>
+        <select id="rec-asr" aria-label="转录模型"><option value="">未安装模型 · 可仅录音</option></select>
+        <label class="chk"><input id="rec-live" type="checkbox"> 实时转录</label>
+        <label class="chk" title="需要用户主动安装 Hy-MT2 1.8B"><input id="rec-live-mt" type="checkbox"> 实时翻译</label>
+        <label class="chk" title="需要用户主动安装 Hy-MT2 7B"><input id="rec-mt" type="checkbox"> 最终整篇精译</label>
+      </div>
+      <div class="row controls">
+        <button id="btn-start" class="btn primary">● 开始录音</button>
+        <button id="btn-pause" class="btn" hidden>⏸ 暂停</button>
+        <button id="btn-resume" class="btn" hidden>▶ 继续</button>
+        <button id="btn-stop" class="btn danger" hidden>■ 结束录音</button>
+        <span id="rec-timer" class="timer">00:00:00</span>
+        <div class="meter"><div id="rec-level" class="meter-fill"></div></div>
+        <span id="rec-hint" class="hint"></span>
+      </div>
+    </section>
+
+    <section class="card transcript-card">
+      <div class="tr-head">
+        <div class="tr-title">
+          <h2 id="tr-name">未选择录音</h2>
+          <span id="tr-status" class="badge"></span>
+        </div>
+        <div class="tr-actions" id="tr-actions" hidden>
+          <a id="dl-md" class="btn small" download>下载 .md</a>
+          <a id="dl-srt" class="btn small" download>下载 .srt</a>
+          <a id="dl-txt" class="btn small" download title="Notta 兼容格式，可直接交给笔记 agent">下载 .txt</a>
+          <a id="dl-zh" class="btn small" download hidden title="英文段 + 中文译文">下载 双语.md</a>
+          <a id="dl-live-zh" class="btn small" download hidden>下载 实时双语稿</a>
+          <button id="btn-translate" class="btn small" hidden title="用 Hy-MT2-7B 按段翻译最终版（会先卸载 Whisper，2 小时课约 5 分钟）">翻译</button>
+          <button id="btn-copy-path" class="btn small" title="复制 transcript.txt 的本机路径">复制路径</button>
+          <button id="btn-export" class="btn small" hidden title="复制为 <课程>/transcripts/M0N-transcript.txt">导出到知识库</button>
+          <button id="btn-dropped" class="btn small" hidden title="小测/闲聊/静音时段被判为噪声的片段，检查有没有误伤">显示已过滤噪声</button>
+          <button id="btn-retranscribe" class="btn small">重新转录</button>
+          <select id="tr-lang" aria-label="重新转录语言" title="重新转录使用的音频语言"><option value="auto">自动检测</option><option value="zh">中文</option><option value="en">英语</option></select>
+          <select id="tr-asr" aria-label="重新转录模型"><option value="">未安装转录模型</option></select>
+          <button id="btn-job-pause" class="btn small" hidden title="当前批次结束后暂停；继续时保留进度。暂停期间请保持服务运行。">暂停任务</button>
+          <button id="btn-job-resume" class="btn small" hidden>继续任务</button>
+          <button id="btn-job-cancel" class="btn small danger-text" hidden title="取消处理，保留音频">取消任务</button>
+          <button id="btn-cancel-import" class="btn small danger-text" hidden title="停止转码并删除这条记录">取消导入</button>
+          <button id="btn-rename" class="btn small">重命名</button>
+          <button id="btn-delete" class="btn small danger-text">删除</button>
+        </div>
+      </div>
+      <div id="tr-progress" class="progress" hidden><div id="tr-progress-fill"></div><span id="tr-progress-text"></span></div>
+      <div class="row meta-row"><div id="tr-meta" class="meta"></div><span class="spacer"></span><button id="btn-view" class="btn small" title="段落：换气停顿不换行，句末长停顿才分段；逐句：每句一行">切换为段落</button><button id="btn-lang" class="btn small" title="双语 / 仅英文 / 仅中文">双语</button><input id="search" placeholder="搜索转录内容…" class="search"><span id="search-count" class="hint"></span></div>
+      <div class="row"><select id="tr-draft" aria-label="稿件类型" hidden><option value="live">实时双语稿（非最终精译）</option><option value="final">完整转录稿</option></select><span id="draft-note" class="hint"></span></div>
+      <div id="segments" class="segments"></div>
+    </section>
+  </main>
+</div>
+
+<footer class="player">
+  <audio id="audio" controls preload="metadata"></audio>
+  <label class="chk"><input id="follow" type="checkbox" checked> 跟随高亮</label>
+  <label class="chk" title="播放时实时压平音量起伏（远处的句子听得清），不改文件"><input id="leveler" type="checkbox"> 响度均衡</label>
+</footer>
+
+<dialog id="model-manager" aria-labelledby="model-title">
+  <div class="model-heading"><div><h2 id="model-title">模型管理</h2><p>所有模型由你决定是否安装。录音、历史与播放无需模型；标准双语推荐组合约 2.75 GB。</p></div><button id="close-models" class="btn small" aria-label="关闭模型管理">关闭</button></div>
+  <p id="model-runtime" class="hint"></p>
+  <div class="row"><span id="model-storage" class="hint"></span><button id="choose-model-storage" class="btn small">选择模型存储位置</button></div>
+  <div id="model-cards"></div>
+  <p class="hint">卸载模型不会删除录音、转录或译文。外部模型只移除引用，不删除原文件。</p>
+  <div id="model-message" role="status" aria-live="polite"></div>
+</dialog>
+<script src="models.js?v=1"></script>
+<script src="app.js?v=18"></script>
+</body>
+</html>

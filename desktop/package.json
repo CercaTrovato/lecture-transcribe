@@ -1,0 +1,24 @@
+{
+  "name": "lecture-transcribe-desktop",
+  "productName": "LectureTranscribe",
+  "version": "0.2.0",
+  "author": {"name": "CercaTrovato"},
+  "license": "MIT",
+  "description": "Local transcription with user-managed optional models",
+  "main": "main.js",
+  "private": true,
+  "scripts": {"start": "electron .", "test": "node --test component-manager.test.js", "build": "electron-builder"},
+  "dependencies": {"adm-zip": "0.5.16"},
+  "devDependencies": {"electron": "44.6.0", "electron-builder": "26.0.12"},
+  "build": {
+    "appId": "org.lecturetranscribe.desktop",
+    "asar": true,
+    "directories": {"output": "../release/desktop"},
+    "files": ["main.js", "preload.js", "setup.html", "component-manager.js", "package.json"],
+    "extraResources": [{"from": "../ltapp", "to": "python-app/ltapp", "filter": ["**/*.py"]}, {"from": "../web", "to": "python-app/web"}, {"from": "../transcribe.py", "to": "python-app/transcribe.py"}, {"from": "../app.py", "to": "python-app/app.py"}],
+    "win": {"target": [{"target": "nsis-web", "arch": ["x64"]}], "icon": "../web/favicon.ico"},
+    "nsisWeb": {"oneClick": false, "allowToChangeInstallationDirectory": true},
+    "mac": {"target": ["dmg"], "category": "public.app-category.productivity", "extendInfo": {"NSMicrophoneUsageDescription": "用于你主动开始的本地录音。"}},
+    "linux": {"target": ["deb"], "category": "AudioVideo"}
+  }
+}

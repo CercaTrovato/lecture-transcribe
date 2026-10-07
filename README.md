@@ -40,6 +40,8 @@ uv run app.py
 
 macOS 源码模式需 Metal 绑定：`uv sync --extra metal --extra test`。翻译运行程序由安装器组件提供；源码模式可设置 `LT_LLAMA_SERVER` 指向已有的 `llama-server`。
 
+Linux 源码模式还需系统 PortAudio 库，例如 Ubuntu/Debian 使用 `sudo apt-get install libportaudio2`；发行安装包应声明该系统依赖。
+
 可选环境变量：
 
 - `LT_DATA_DIR`：用户录音与配置目录。

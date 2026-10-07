@@ -19,6 +19,7 @@
     "win": {"target": [{"target": "nsis-web", "arch": ["x64"]}], "icon": "../web/favicon.ico"},
     "nsisWeb": {"oneClick": false, "allowToChangeInstallationDirectory": true},
     "mac": {"target": ["dmg"], "category": "public.app-category.productivity", "extendInfo": {"NSMicrophoneUsageDescription": "用于你主动开始的本地录音。"}},
-    "linux": {"target": ["deb"], "category": "AudioVideo"}
+    "linux": {"target": ["deb"], "category": "AudioVideo"},
+    "deb": {"depends": ["libportaudio2", "libgtk-3-0", "libnss3", "libgbm1", "libasound2 | libasound2t64"]}
   }
 }

@@ -6,6 +6,7 @@ from pathlib import Path
 root = Path(__file__).resolve().parents[1]
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument("--base-url", required=True)
+parser.add_argument("--app-package-url", help="Application archive directory URL; defaults to base-url/desktop/nsis-web/")
 parser.add_argument("--output", type=Path, required=True)
 parser.add_argument("--unsigned-prototype", action="store_true")
 args = parser.parse_args()
@@ -19,7 +20,10 @@ manifest_path.write_text(json.dumps(manifest, indent=2), encoding="utf-8")
 package = json.loads((root / "desktop" / "package.json").read_text(encoding="utf-8"))
 config = package["build"]
 config["extraResources"].append({"from": str(manifest_path), "to": "components.json"})
-config["nsisWeb"]["appPackageUrl"] = base + "desktop/nsis-web/"
+app_url = (args.app_package_url or base + "desktop/nsis-web/").rstrip("/")
+if not app_url.startswith(("https://", "http://127.0.0.1:", "http://localhost:")):
+    raise SystemExit("Use HTTPS, or a loopback HTTP address for the application package")
+config["nsisWeb"]["appPackageUrl"] = app_url
 if args.unsigned_prototype:
     config["win"]["signAndEditExecutable"] = False
 config["electronDist"] = str(root / "desktop" / "node_modules" / "electron" / "dist")

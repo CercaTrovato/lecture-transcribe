@@ -31,6 +31,16 @@ npx electron-builder --publish never --config <构建配置.json>
 
 本地样包使用 `http://127.0.0.1:8847/`，仅用于审阅。不要把它当作可在其他电脑直接下载组件的正式安装器。配置真实发行地址后需重新构建。
 
+GitHub Release 的附件使用平铺目录，需同时指定应用压缩包所在目录：
+
+```text
+python tools/configure_release.py --base-url https://github.com/CercaTrovato/lecture-transcribe/releases/download/v0.2.0/ --app-package-url https://github.com/CercaTrovato/lecture-transcribe/releases/download/v0.2.0/ --output <构建配置.json> --unsigned-prototype
+```
+
+`--app-package-url` 是目录 URL，Electron Builder 会追加应用压缩包文件名。未提供此参数时沿用 `desktop/nsis-web/` 子目录。未配置签名证书的当前发行使用 `--unsigned-prototype`，不会申请或安装签名证书。
+
+Windows CPU 组件必须包含 `llama-server` 的完整非 CUDA 依赖，包括 `mtmd.dll`；仅能启动 Python 或转录成功不能证明翻译服务可运行。发行需分别验证 CPU 转录、CPU 翻译与选装 NVIDIA 路径。
+
 ## 隔离检查
 
 开发时可设置 `LT_USER_DATA`、`LT_DATA_DIR`、`LT_COMPONENT_DIR` 指向独立测试目录。`--headless --remote-debugging-port=<本机端口>` 可用来检查隐藏的 Electron 窗口，日常启动无需这些参数。

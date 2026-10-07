@@ -194,7 +194,8 @@ function paraEl(p, provisional) {
   return el;
 }
 function liveForced() { return !!(state.current && state.recRid === state.current && state.recState !== "idle"); }
-function viewMode() { return liveForced() || state.draftLive ? "para" : (state.view || "line"); }
+function pairedTranslation() { return !state.showDropped && !!state.translation?.paras?.length; }
+function viewMode() { return liveForced() || state.draftLive || pairedTranslation() ? "para" : (state.view || "line"); }
 function renderSegments(segs, provisional) {
   state.segments = segs;
   state.activeIdx = -1;
@@ -223,7 +224,7 @@ function renderSegments(segs, provisional) {
   box.appendChild(frag);
   $("search").oninput();
   $("btn-view").textContent = (state.view || "line") === "para" ? "切换为逐句" : "切换为段落";
-  $("btn-view").hidden = liveForced() || state.draftLive;
+  $("btn-view").hidden = liveForced() || state.draftLive || pairedTranslation();
   applyLang();
 }
 function buildParagraphsIndexed(segs) {

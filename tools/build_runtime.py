@@ -39,7 +39,7 @@ def archive_runtime(python_home, site_packages, llama_dir, output, cuda=False):
                 version = f"python{sys.version_info.major}.{sys.version_info.minor}"
                 add_tree(site_packages, f"python/lib/{version}/site-packages", ("nvidia", "__pycache__", "pip", "setuptools", "wheel"))
             for file in llama_dir.glob("*"):
-                if file.is_file() and (file.name.startswith(("ggml-cpu", "ggml-base", "llama", "libllama", "libggml", "libomp")) or file.name in ("ggml.dll",)):
+                if file.is_file() and (file.name.startswith(("ggml-cpu", "ggml-base", "llama", "libllama", "libggml", "libomp", "mtmd", "libmtmd")) or file.name in ("ggml.dll",)):
                     if "cuda" not in file.name and "bench" not in file.name and "cli" not in file.name:
                         archive.write(file, "llama/" + file.name)
 

@@ -1,4 +1,5 @@
 import unittest
+import os
 from types import SimpleNamespace
 from unittest.mock import patch
 
@@ -37,3 +38,14 @@ class AdapterTests(unittest.TestCase):
             holder.ensure_main("asr-turbo")
         self.assertEqual(load.call_count, 1)
         self.assertIs(holder.live_model, holder.model.model)
+
+    def test_cpu_mode_works_even_if_cuda_support_is_unavailable(self):
+        from pathlib import Path
+        store = SimpleNamespace(choose_asr=lambda: "asr-turbo", path=lambda _: Path("local-model"),
+                                spec=lambda _: {"backend":"ctranslate2"})
+        holder = ModelHolder(store)
+        with patch.dict(os.environ, {"LT_DEVICE":"cpu"}), \
+             patch("ctranslate2.get_cuda_device_count", side_effect=RuntimeError("not compiled with CUDA")), \
+             patch("transcribe.load_model", return_value=SimpleNamespace(model=object())):
+            self.assertTrue(holder.ensure_main("asr-turbo"))
+        self.assertEqual(holder.device, "cpu")

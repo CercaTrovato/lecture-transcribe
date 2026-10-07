@@ -51,7 +51,14 @@ class ModelHolder:
                     self.device = self.model.device
                 else:
                     import ctranslate2
-                    cuda = ctranslate2.get_cuda_device_count() > 0
+                    cuda = False
+                    if requested != "cpu":
+                        try:
+                            cuda = ctranslate2.get_cuda_device_count() > 0
+                        except (RuntimeError, ValueError):
+                            cuda = False
+                    if requested == "cuda" and not cuda:
+                        raise ModelError("当前设备的 CUDA 不可用，请选择 CPU 或检查已安装的 NVIDIA 运行组件。")
                     self.device = "cuda" if requested == "cuda" or (requested == "auto" and cuda) else "cpu"
                     try:
                         self.model = transcribe.load_model(str(path), device=self.device,
